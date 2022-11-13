@@ -1,9 +1,13 @@
 const express = require("express");
 const app = express();
+const weatherRoutes = require("./routes/weather");
+
+app.use(express.json());
+
+app.use("/weather", weatherRoutes);
 
 app.all("/", (req, res) => {
-    console.log("Testing testing 123")
-    res.send("Hello World!")
+    res.send("forty-two");
 });
 
 app.listen(process.env.PORT || 3000);
