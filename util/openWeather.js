@@ -1,6 +1,6 @@
 const safeGet = require("./safeGet");
 
-const openWeatherApiUrlBase = "https://api.openweathermap.org/data/2.5/";
+const openWeatherApiUrlBase = "https://api.openweathermap.org/";
 
 const getOpenWeatherApiKey = () => {
     const apiKey = safeGet(() => process.env.OPENWEATHER_API_KEY, "");

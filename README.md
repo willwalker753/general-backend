@@ -1,6 +1,7 @@
 # General Backend
 
-> This a general purpose edge API that is used by my front-end projects.
+> This a general purpose edge API that is used by my front-end projects. 
+> 
 > Live Demo: [https://general-backend.cyclic.app/](https://general-backend.cyclic.app/)
 
 ## Getting Started

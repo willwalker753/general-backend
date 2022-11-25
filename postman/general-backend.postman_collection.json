@@ -1,0 +1,69 @@
+{
+	"info": {
+		"_postman_id": "0b7a4c09-da10-472a-91a9-b951e545e706",
+		"name": "general-backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10880135"
+	},
+	"item": [
+		{
+			"name": "weather",
+			"item": [
+				{
+					"name": "Get Current Weather",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{endpoint}}/weather/getCurrentWeather?lat=32.7762719&lon=-96.7968559",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"weather",
+								"getCurrentWeather"
+							],
+							"query": [
+								{
+									"key": "lat",
+									"value": "32.7762719"
+								},
+								{
+									"key": "lon",
+									"value": "-96.7968559"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Coordinates by City State",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{endpoint}}/weather/searchCoordsByCityState?query=Dallas, TX",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"weather",
+								"searchCoordsByCityState"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "Dallas, TX"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

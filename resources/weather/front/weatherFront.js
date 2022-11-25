@@ -1,4 +1,5 @@
 const openWeatherService = require("../service/openWeatherService");
+const { parseCityState } = require("../../../util/parseAddress");
 const errorHandler = require("../../../util/errorHandler");
 
 /* 
@@ -48,6 +49,49 @@ const getCurrentWeather = async (req, res) => {
     }
 }
 
+/* 
+###############################
+#   searchCoordsByCityState   #
+###############################
+
+Request Schema:
+    URL Params:
+        query = The query to search by, state is optional.
+                Examples: "Dallas" | "Dallas, TX"
+
+Response Schema:
+    The "state" field can be null when the result is not in the United States
+    {
+        results: [
+            {
+                name: "Dallas",
+                lat: 55.55,
+                lon: 44.44,
+                country: "US",
+                state: "TX"
+            },
+            {
+                name: "Dallas",
+                lat: 55.55,
+                lon: 44.44,
+                country: "GB",
+                state: null 
+            }
+        ]
+    }
+*/
+const searchCoordsByCityState = async (req, res) => {
+    try {
+        const { query } = req.query;
+        const { city, state } = parseCityState(query);
+        const results = await openWeatherService.searchCoordsByCityState(city, state);
+        res.status(200).send(results);
+    } catch (error) {
+        errorHandler(error, res, "Error while gettings the current weather conditions. Please try again soon.", 500);
+    }
+}
+
 module.exports = {
-    getCurrentWeather
+    getCurrentWeather,
+    searchCoordsByCityState
 }
