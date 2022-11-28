@@ -5,6 +5,10 @@ const {
     getWeatherIcon
 } = require("../../../util/openWeather");
 const capitalizeWordsInString = require("../../../util/capitalizeWordsInString");
+const {
+    stateNameMap,
+    countryCodeMap
+} = require("../../../util/parseAddress");
 
 const getCurrentWeather = async (lat, lon) => {
     const apiKey = getOpenWeatherApiKey();
@@ -38,26 +42,28 @@ const getCurrentWeather = async (lat, lon) => {
     return formattedCurrentWeather;
 }
 
-const searchCoordsByCityState = async (city, state=null) => {
+const searchCoordsByCityStateCountry = async (city, state=null, country=null) => {
     const apiKey = getOpenWeatherApiKey();
-    const searchQuery = state ? `${city},${state},US` : city;
+    let searchQuery = city;
+    if (state)  searchQuery = `${city},${state},US`;
+    else if (country)  searchQuery = `${city},${country}`;
     const geocodingRes = await axios.get(`${openWeatherApiUrlBase}geo/1.0/direct?limit=5&q=${searchQuery}&appid=${apiKey}`);
     const geocodingData = geocodingRes.data;
-    const formattedResults = {
-        results: geocodingData.map(index => {
-            return {
-                name: index.name,
-                lat: index.lat,
-                lon: index.lon,
-                country: index.country,
-                state: index.state ? index.state : null
-            }
-        })
-    }
+    const formattedResults = geocodingData.map(index => {
+        return {
+            name: index.name,
+            lat: index.lat,
+            lon: index.lon,
+            country_code: index.country ? index.country : null,
+            country_name: index.country && countryCodeMap[index.country] ? capitalizeWordsInString(countryCodeMap[index.country].toLowerCase()) : null,
+            state_code: index.state ? stateNameMap[index.state.toUpperCase()] ? stateNameMap[index.state.toUpperCase()] : index.state : null,
+            state_name: index.state ? index.state : null
+        }
+    })
     return formattedResults;
 }
 
 module.exports = {
     getCurrentWeather,
-    searchCoordsByCityState
+    searchCoordsByCityStateCountry
 }

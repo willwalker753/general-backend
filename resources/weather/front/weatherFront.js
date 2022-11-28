@@ -1,5 +1,5 @@
 const openWeatherService = require("../service/openWeatherService");
-const { parseCityState } = require("../../../util/parseAddress");
+const { parseCityStateCountryFromString } = require("../../../util/parseAddress");
 const errorHandler = require("../../../util/errorHandler");
 
 /* 
@@ -50,42 +50,45 @@ const getCurrentWeather = async (req, res) => {
 }
 
 /* 
-###############################
-#   searchCoordsByCityState   #
-###############################
+######################################
+#   searchCoordsByCityStateCountry   #
+######################################
 
 Request Schema:
     URL Params:
-        query = The query to search by, state is optional.
-                Examples: "Dallas" | "Dallas, TX"
+        query = The query to search by, state/country is optional.
+                Examples: "Dallas" | "Dallas, TX" | "London, GB" | "London, United Kingdom"
 
 Response Schema:
-    The "state" field can be null when the result is not in the United States
     {
         results: [
             {
                 name: "Dallas",
                 lat: 55.55,
                 lon: 44.44,
-                country: "US",
-                state: "TX"
+                country_code: "US",
+                country_name: "United States",
+                state_code: "TX",
+                state_name: "Texas",
             },
             {
-                name: "Dallas",
+                name: "London",
                 lat: 55.55,
                 lon: 44.44,
-                country: "GB",
-                state: null 
+                country_code: "United Kingdom",
+                country_name: "GB",
+                state_code: null,
+                state_name: null,
             }
         ]
     }
 */
-const searchCoordsByCityState = async (req, res) => {
+const searchCoordsByCityStateCountry = async (req, res) => {
     try {
         const { query } = req.query;
-        const { city, state } = parseCityState(query);
-        const results = await openWeatherService.searchCoordsByCityState(city, state);
-        res.status(200).send(results);
+        const { city, state, country } = parseCityStateCountryFromString(query);
+        const results = await openWeatherService.searchCoordsByCityStateCountry(city, state, country);
+        res.status(200).send({ results });
     } catch (error) {
         errorHandler(error, res, "Error while gettings the current weather conditions. Please try again soon.", 500);
     }
@@ -93,5 +96,5 @@ const searchCoordsByCityState = async (req, res) => {
 
 module.exports = {
     getCurrentWeather,
-    searchCoordsByCityState
+    searchCoordsByCityStateCountry
 }
