@@ -1,0 +1,7 @@
+FROM node:13.13.0-alpine3.10
+
+RUN mkdir -p /code/source
+COPY /source /code/source
+WORKDIR /code/source
+
+CMD ["/bin/sh", "-c", "npm install; npm run dev"]

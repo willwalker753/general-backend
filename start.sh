@@ -1,7 +1,7 @@
 startPath=$(pwd)
 scriptPath=$(realpath $(dirname "${BASH_SOURCE[0]}"))
 
-cd $scriptPath
+cd $scriptPath/source
 
 . create-node-alias.sh
 nodebox-general-data npm install

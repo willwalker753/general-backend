@@ -10,7 +10,7 @@
 2. Create an .env file based on the template. Make sure to add your api keys to it. `cp template.env .env`
 3. Start the app.
    * If Docker is installed on your system, run start.sh `. start.sh`
-   * Otherwise, start the app with node. `npm install && npm run dev`
+   * Otherwise, start the app with node. `cd source && npm install && npm run dev`
 4. The app is now listening on port `8000` :)
 
 ## Testing 
