@@ -44,20 +44,49 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{endpoint}}/weather/searchCoordsByCityState?query=Dallas, TX",
+							"raw": "{{protocol}}://{{endpoint}}/weather/searchCoordsByCityStateCountry?query=London",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{endpoint}}"
 							],
 							"path": [
 								"weather",
-								"searchCoordsByCityState"
+								"searchCoordsByCityStateCountry"
 							],
 							"query": [
 								{
 									"key": "query",
-									"value": "Dallas, TX"
+									"value": "London"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "cinemeld",
+			"item": [
+				{
+					"name": "Get Trending Movies",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{endpoint}}/cinemeld/movie/category/trending",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"cinemeld",
+								"movie",
+								"category",
+								"trending"
 							]
 						}
 					},
