@@ -1,7 +1,9 @@
-const fetch = require('node-fetch');
+const TmdbApiAgentInterface = require("./TmdbApiAgentInterface");
+const fetch = require("node-fetch");
 
-class TmdbApiAgent {
+class TmdbApiAgent extends TmdbApiAgentInterface {
     constructor(urlBase) {
+        super();
         this.urlBase = urlBase;
     }
 

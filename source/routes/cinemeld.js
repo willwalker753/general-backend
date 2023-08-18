@@ -7,19 +7,32 @@ const ErrorThrower = require("../util/error/ErrorThrower")
 const MovieFront = require("../resources/cinemeld/movie/front/MovieFront");
 const MovieServiceTmdb = require("../resources/cinemeld/movie/service/MovieServiceTmdb");
 const TmdbApiAgent = require("../resources/cinemeld/movie/request/TmdbApiAgent");
+const TmdbApiAgentMock = require("../resources/cinemeld/movie/request/TmdbApiAgentMock");
 
-const movieFront = new MovieFront(
-    new MovieServiceTmdb(
-        new TmdbApiAgent(
-            "https://api.themoviedb.org/3"
+// this function allows classes to be built at request time
+registerMovieRoute = (frontMethod, req, res) => {
+    const logger = new Logger();
+
+    const tmdbApiBaseUrl = "https://api.themoviedb.org/3";
+    let tmdbApiAgent = new TmdbApiAgent(tmdbApiBaseUrl);    
+    if (process.env.PLATFORM === "local") {
+        logger.warning("! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !")
+        logger.warning("MOCK TMDB API IN USE because the PLATFORM env variable is set to local")
+        logger.warning("! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !")
+        tmdbApiAgent = new TmdbApiAgentMock(tmdbApiBaseUrl);
+    }
+    
+    const movieFront = new MovieFront(
+        new MovieServiceTmdb(
+            tmdbApiAgent,
+            new ErrorThrower(ServerError)
         ),
-        new ErrorThrower(
-            ServerError
-        )
-    ),
-    new Logger()
-)
+        logger
+    )
 
-router.get("/movie/category/trending", movieFront.getTrendingMovies);
+    return movieFront[frontMethod](req, res);
+}
+
+router.get("/movie/category/trending", (req, res) => registerMovieRoute("getTrendingMovies", req, res));
 
 module.exports = router;

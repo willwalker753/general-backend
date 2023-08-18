@@ -8,6 +8,11 @@ class Logger {
         return this;
     }
 
+    warning() {
+        console.log("WARNING: " + this._formattedDtUTC() + "  ", ...arguments);
+        return this;
+    }
+
     error() {
         console.log("ERROR: " + this._formattedDtUTC() + "  ", ...arguments);
         return this;
