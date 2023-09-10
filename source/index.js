@@ -46,7 +46,7 @@ const initializeExpressApp = (appOC) => {
 
     // healthcheck
     app.all("/", (req, res) => {
-        res.send("forty-two");
+        res.send("forty-two"); 
     });
     
     // start the app
