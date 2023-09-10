@@ -2,13 +2,13 @@ const TmdbApiAgentInterface = require("./TmdbApiAgentInterface");
 const mockData = require("./TmdbApiMockData.json");
 
 class TmdbApiAgentMock extends TmdbApiAgentInterface {
-    constructor(urlBase) {
+    constructor(urlBasePromise) {
         super();
-        this.urlBase = urlBase;
+        this.urlBasePromise = urlBasePromise;
     }
 
     get = async (path, headers={}) => {
-        const url = this._createRequestUrl(path);
+        const url = await this._createRequestUrl(path);
         const result = mockData.get[url];
         if (!result) {
             throw new Error(`TMDB Mock data not found for GET ${url}`);
@@ -16,13 +16,13 @@ class TmdbApiAgentMock extends TmdbApiAgentInterface {
         return result;
     }
 
-    _createRequestUrl = (path) => {
+    _createRequestUrl = async (path) => {
         let safePath = path;
         if (safePath.startsWith("/") === false) {
             safePath = `/${safePath}`;
         }
 
-        return this.urlBase + safePath;
+        return await this.urlBasePromise + safePath;
     }
 }
 

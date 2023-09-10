@@ -2,13 +2,13 @@ const TmdbApiAgentInterface = require("./TmdbApiAgentInterface");
 const fetch = require("node-fetch");
 
 class TmdbApiAgent extends TmdbApiAgentInterface {
-    constructor(urlBase) {
+    constructor(urlBasePromise) {
         super();
-        this.urlBase = urlBase;
+        this.urlBasePromise = urlBasePromise;
     }
 
     get = async (path, headers={}) => {
-        const url = this._createRequestUrl(path);
+        const url = await this._createRequestUrl(path);
         const options = {
             method: "GET",
             headers: {
@@ -24,7 +24,7 @@ class TmdbApiAgent extends TmdbApiAgentInterface {
     }
 
     post = async (path, data, headers={}) => {
-        const url = this._createRequestUrl(path);
+        const url = await this._createRequestUrl(path);
         const options = {
             method: "POST",
             data: data,
@@ -40,13 +40,13 @@ class TmdbApiAgent extends TmdbApiAgentInterface {
         return result;
     }
 
-    _createRequestUrl = (path) => {
+    _createRequestUrl = async (path) => {
         let safePath = path;
         if (safePath.startsWith("/") === false) {
             safePath = `/${safePath}`;
         }
 
-        return this.urlBase + safePath;
+        return await this.urlBasePromise + safePath;
     }
     
     _getAdditionalHeaders = () => {

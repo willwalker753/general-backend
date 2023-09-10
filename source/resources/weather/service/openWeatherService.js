@@ -3,12 +3,12 @@ const {
     openWeatherApiUrlBase,
     getOpenWeatherApiKey,
     getWeatherIcon
-} = require("../../../util/openWeather");
-const capitalizeWordsInString = require("../../../util/capitalizeWordsInString");
+} = require("../../../util/weather/openWeather");
+const capitalizeWordsInString = require("../../../util/weather/capitalizeWordsInString");
 const {
     stateNameMap,
     countryCodeMap
-} = require("../../../util/parseAddress");
+} = require("../../../util/weather/parseAddress");
 
 const getCurrentWeather = async (lat, lon) => {
     const apiKey = getOpenWeatherApiKey();
