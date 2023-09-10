@@ -37,11 +37,13 @@ app.all("/", (req, res) => {
 });
 
 // request logger
-app.use(async (req, res, next) => {
+app.use((req, res, next) => {
     const { appOCPromise } = require("./ioc");
-    const appOC = await appOCPromise
-    const logger = appOC.get("Logger");
-    logger.info(`Incoming request ${req.url}`);
+    appOCPromise.then(appOC => {
+        const logger = appOC.get("Logger");
+        logger.info(`Incoming request ${req.url}`);
+
+    });
     next();
 })
 
