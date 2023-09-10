@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { appOCPromise } = require("../ioc");
 
-appOCPromise.then(appOC => {
+appOCPromise.then(appOC => {    
     const movieFront = appOC.get("CinemeldMovieFront");
     router.get("/movie/category/trending", movieFront.getTrendingMovies);
 })

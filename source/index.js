@@ -7,25 +7,6 @@ const cinemeldRoutes = require("./routes/cinemeld");
 
 require("dotenv").config()
 
-const addAppRoutes = (appOC) => {
-    const logger = appOC.get("Logger");
-    
-    // request logger
-    app.use((req, res, next) => {
-        logger.info(`Incoming request ${req.url}`);
-        next();
-    })
-    
-    // app routes
-    app.use("/cinemeld", cinemeldRoutes);
-    // app.use("/weather", weatherRoutes);
-}
-
-const { appOCPromise } = require("./ioc");
-appOCPromise.then((appOC) => {
-    addAppRoutes(appOC);
-})
-
 // allowed webapp origins
 const corsOptions = {
     origin: [
@@ -54,6 +35,19 @@ app.options("*", (req, res) => {
 app.all("/", (req, res) => {
     res.send("forty-two"); 
 });
+
+// request logger
+app.use(async (req, res, next) => {
+    const { appOCPromise } = require("./ioc");
+    const appOC = await appOCPromise
+    const logger = appOC.get("Logger");
+    logger.info(`Incoming request ${req.url}`);
+    next();
+})
+
+// app routes
+app.use("/cinemeld", cinemeldRoutes);
+// app.use("/weather", weatherRoutes);
 
 // start the app
 app.listen(process.env.PORT || 8000);
