@@ -9,6 +9,7 @@ class EnvVarProcurer {
             const checkInterval = 100;
 
             function checkVariable() {
+                console.log("key", key, "currentValue", process.env[key], "complete env", process.env)
                 if (process.env[key]) {
                     resolve(process.env[key]);
                     return;
