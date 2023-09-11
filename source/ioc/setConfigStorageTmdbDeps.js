@@ -192,7 +192,7 @@ const setConfigStorageTmdbDeps = async (appOC) => {
 
     // only use the original size if the desired size is not available
     const backdropSize = configurationRes.images.backdrop_sizes.includes("w1280") ? "w1280" : "original";
-    const posterSize = configurationRes.images.poster_sizes.includes("w185") ? "w185" : "original";
+    const posterSize = configurationRes.images.poster_sizes.includes("w342") ? "w342" : "original";
     configStorage.set("TMDB_IMAGE_URL_BASE", imageUrlBase);
     configStorage.set("TMDB_BACKDROP_SIZE", backdropSize);
     configStorage.set("TMDB_POSTER_SIZE", posterSize);
