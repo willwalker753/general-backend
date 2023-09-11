@@ -1,4 +1,4 @@
-const initializeConfigStorage = async (appOC) => {
+const setConfigStorageEnvVariables = async (appOC) => {
     const configStorage = appOC.get("ConfigStorage");
     const envVarProcurer = appOC.get("EnvVarProcurer");
 
@@ -9,4 +9,4 @@ const initializeConfigStorage = async (appOC) => {
     configStorage.set("TMDB_API_URL_BASE", tmdbApiBaseUrl);
 }
 
-module.exports = initializeConfigStorage;
+module.exports = setConfigStorageEnvVariables;
