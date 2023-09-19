@@ -40,7 +40,8 @@ class MovieServiceTmdb extends MovieServiceInterface {
                 genre_list: await this._parseGenreIdList(result.genre_ids),
                 popularity: result.popularity,
                 release_date: result.release_date,
-                vote_average: result.vote_average,
+                vote_percent: this._convertVoteAverageToPercent(result.vote_average),
+                vote_factor: this._convertVoteAverageToFactor(result.vote_average),
                 vote_count: result.vote_count,
                 poster_url: await this._getPosterUrl(result.poster_path)
             })
@@ -76,6 +77,16 @@ class MovieServiceTmdb extends MovieServiceInterface {
             genreList.push(genre);
         })
         return genreList;
+    }
+
+    // converts to the tmdb vote average (scale of 0 to 10) to a percert (0 to 100)
+    _convertVoteAverageToPercent = (voteAverage) => {
+        return voteAverage * 10;
+    }
+
+    // converts to the tmdb vote average (scale of 0 to 10) to a factor (0 to 1)
+    _convertVoteAverageToFactor = (voteAverage) => {
+        return this._convertVoteAverageToPercent(voteAverage) / 100;
     }
 }
 
