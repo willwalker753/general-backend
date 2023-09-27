@@ -1,5 +1,8 @@
 const MovieServiceInterface = require("./MovieServiceInterface");
 
+/*
+    This is designed to use The Movie Database (TMDB) V3 API
+*/
 class MovieServiceTmdb extends MovieServiceInterface {
     constructor(
         tmdbApiAgent, 
@@ -28,29 +31,47 @@ class MovieServiceTmdb extends MovieServiceInterface {
             this.errorThrower.server("Error while getting the list of movies. Please try again", res)
         }
         
-        const parsedResults = [];
+        const parsedMovies = [];
         for (let i=0; i<res.results.length; i++) {
-            const result = res.results[i];
-            parsedResults.push({
-                id: result.id,
-                backdrop_url: await this._getBackdropUrl(result.backdrop_path),
-                title: result.title,
-                overview: result.overview,
-                media_type: result.media_type,
-                genre_list: await this._parseGenreIdList(result.genre_ids),
-                popularity: result.popularity,
-                release_date: result.release_date,
-                vote_percent: this._convertVoteAverageToPercent(result.vote_average),
-                vote_factor: this._convertVoteAverageToFactor(result.vote_average),
-                vote_count: result.vote_count,
-                poster_url: await this._getPosterUrl(result.poster_path)
-            })
+            const movie = res.results[i];
+            parsedMovies.push(self._parseMovieObject(movie));
         }
 
         return {
             ...res,
-            results: parsedResults
+            results: parsedMovies
         };
+    }
+
+    // "Latest Arrivals"
+    // https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1
+
+    // "Viewer Favorites"
+    // https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=vote_count.desc&vote_average.gte=8.5
+
+    // "Action Packed"
+    // https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=action_id_here
+    // movieGenreIdMapPromise Action
+
+    // "Comedy"
+    // https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=action_id_here
+    // movieGenreIdMapPromise Comedy
+
+    _parseMovieObject = async (movie) => {
+        return {
+            id: movie.id,
+            backdrop_url: await this._getBackdropUrl(movie.backdrop_path),
+            title: movie.title,
+            overview: movie.overview,
+            media_type: movie.media_type,
+            genre_list: await this._parseGenreIdList(movie.genre_ids),
+            popularity: movie.popularity,
+            release_date: movie.release_date,
+            vote_percent: this._convertVoteAverageToPercent(movie.vote_average),
+            vote_factor: this._convertVoteAverageToFactor(movie.vote_average),
+            vote_count: movie.vote_count,
+            poster_url: await this._getPosterUrl(movie.poster_path)
+        }
     }
 
     _getBackdropUrl = async (path) => {

@@ -15,6 +15,20 @@ class MovieFront {
         }
     }
 
+    getMovies = async (req, res) => {
+        try {
+            const resultList = await Promise.all(
+                this.movieService.getTrendingMovies(),
+            );
+            const result = {
+                trending_movies: resultList[0],
+            }
+            res.status(200).send(result)
+        } catch (error) {
+            this._handleErrorResponse(error, res);
+        }
+    }
+
     _handleErrorResponse = (error, res) => {             
         this.logger.error(error);    
         if (error.type === "server" && error.clientMessage) {
