@@ -62,11 +62,13 @@ const buildAppOC = async () => {
             logger.warning("MOCK TMDB API IN USE because the PLATFORM env variable is set to local")
             logger.warning("! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !")
             return new TmdbApiAgentMock(
-                tmdbApiBaseUrlPromise
+                tmdbApiBaseUrlPromise,
+                container.get("Logger")
             );
         }
         return new TmdbApiAgent(
-            tmdbApiBaseUrlPromise
+            tmdbApiBaseUrlPromise,
+            container.get("Logger")
         );
     }
     appOC.set("TmdbApiAgent", _buildTmdbApiAgent);

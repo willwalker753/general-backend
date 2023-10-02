@@ -18,6 +18,7 @@ class TmdbApiAgent extends TmdbApiAgentInterface {
         };
 
         const response = await fetch(url, options);
+        this.logger.info(`TMDB API Request GET ${url} ${response.status}`);
         const result = response.json();
 
         return result;
@@ -35,6 +36,7 @@ class TmdbApiAgent extends TmdbApiAgentInterface {
         };
 
         const response = await fetch(url, options)
+        this.logger.info(`TMDB API Request POST ${url} ${response.status}`);
         const result = response.json();
 
         return result;

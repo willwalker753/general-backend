@@ -15,13 +15,17 @@ class MovieFront {
         }
     }
 
-    getMovies = async (req, res) => {
+    getSummary = async (req, res) => {
         try {
-            const resultList = await Promise.all(
+            const resultList = await Promise.all([
                 this.movieService.getTrendingMovies(),
-            );
+                this.movieService.getNowPlayingMovies(),
+                this.movieService.getViewerFavoriteMovies(),
+            ]);
             const result = {
                 trending_movies: resultList[0],
+                now_playing: resultList[1],
+                viewer_favorites: resultList[2],
             }
             res.status(200).send(result)
         } catch (error) {

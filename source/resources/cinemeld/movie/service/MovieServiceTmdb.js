@@ -26,7 +26,7 @@ class MovieServiceTmdb extends MovieServiceInterface {
     }
 
     getTrendingMovies = async () => {
-        const res = await this.tmdbApiAgent.get("/trending/movie/day?language=en-US");
+        const res = await this.tmdbApiAgent.get("/trending/movie/day?language=en-US&page=1");
         if (res.success === false) {
             this.errorThrower.server("Error while getting the list of movies. Please try again", res)
         }
@@ -34,7 +34,7 @@ class MovieServiceTmdb extends MovieServiceInterface {
         const parsedMovies = [];
         for (let i=0; i<res.results.length; i++) {
             const movie = res.results[i];
-            parsedMovies.push(self._parseMovieObject(movie));
+            parsedMovies.push(await this._parseMovieObject(movie));
         }
 
         return {
@@ -43,11 +43,41 @@ class MovieServiceTmdb extends MovieServiceInterface {
         };
     }
 
-    // "Latest Arrivals"
-    // https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1
+    getNowPlayingMovies = async () => {
+        const res = await this.tmdbApiAgent.get("/movie/now_playing?language=en-US&page=1");
+        if (res.success === false) {
+            this.errorThrower.server("Error while getting the list of movies. Please try again", res)
+        }
+        
+        const parsedMovies = [];
+        for (let i=0; i<res.results.length; i++) {
+            const movie = res.results[i];
+            parsedMovies.push(await this._parseMovieObject(movie));
+        }
 
-    // "Viewer Favorites"
-    // https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=vote_count.desc&vote_average.gte=8.5
+        return {
+            ...res,
+            results: parsedMovies
+        };
+    }
+
+    getViewerFavoriteMovies = async () => {
+        const res = await this.tmdbApiAgent.get("/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&vote_average.gte=7.5&vote_count.gte=100&with_original_language=en");
+        if (res.success === false) {
+            this.errorThrower.server("Error while getting the list of movies. Please try again", res)
+        }
+        
+        const parsedMovies = [];
+        for (let i=0; i<res.results.length; i++) {
+            const movie = res.results[i];
+            parsedMovies.push(await this._parseMovieObject(movie));
+        }
+
+        return {
+            ...res,
+            results: parsedMovies
+        };
+    }
 
     // "Action Packed"
     // https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=action_id_here
