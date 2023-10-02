@@ -2,9 +2,10 @@ const TmdbApiAgentInterface = require("./TmdbApiAgentInterface");
 const fetch = require("node-fetch");
 
 class TmdbApiAgent extends TmdbApiAgentInterface {
-    constructor(urlBasePromise) {
+    constructor(urlBasePromise, logger) {
         super();
         this.urlBasePromise = urlBasePromise;
+        this.logger = logger;
     }
 
     get = async (path, headers={}) => {
