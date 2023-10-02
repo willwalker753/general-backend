@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = require('cors');
+const cors = require("cors");
 const app = express();
 
 const cinemeldRoutes = require("./routes/cinemeld");
@@ -13,8 +13,7 @@ const corsOptions = {
         "https://dev-cinemeld.willwalker.org",
         "https://cinemeld.willwalker.org",
         "https://willwalker.org",
-    ],
-    methods: 'OPTIONS',
+    ]
 };
 app.use(cors(corsOptions));
 
