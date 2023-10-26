@@ -91,6 +91,30 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get Movie Detail",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{endpoint}}/cinemeld/movie/detail/976573",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"cinemeld",
+								"movie",
+								"detail",
+								"976573"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}

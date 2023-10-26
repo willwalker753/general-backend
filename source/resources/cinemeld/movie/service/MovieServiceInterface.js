@@ -10,6 +10,11 @@ class MovieServiceInterface {
     getBestRatedMovies = async () => {
         throw new Error("getBestRatedMovies is not implemented")
     }
+
+    getMovieDetail = async (movieId) => {
+        throw new Error("getMovieDetail is not implemented")
+    }
+
 }
 
 module.exports = MovieServiceInterface;

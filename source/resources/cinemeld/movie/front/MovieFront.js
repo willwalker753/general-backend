@@ -15,7 +15,7 @@ class MovieFront {
         }
     }
 
-    getSummary = async (req, res) => {
+    getCombinedCategorySummary = async (req, res) => {
         try {
             const resultList = await Promise.all([
                 this.movieService.getTrendingMovies(),
@@ -27,6 +27,16 @@ class MovieFront {
                 now_playing: resultList[1],
                 viewer_favorites: resultList[2],
             }
+            res.status(200).send(result)
+        } catch (error) {
+            this._handleErrorResponse(error, res);
+        }
+    }
+
+    getMovieDetail = async (req, res) => {
+        try {
+            const { movie_id } = req.params;
+            const result = await this.movieService.getMovieDetail(movie_id);
             res.status(200).send(result)
         } catch (error) {
             this._handleErrorResponse(error, res);
