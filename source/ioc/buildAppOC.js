@@ -26,6 +26,12 @@ const buildAppOC = async () => {
     }
     appOC.set("ValTester", _buildValTester);
 
+    const TimeConverter = require("../util/timeConverter/TimeConverter");
+    const _buildTimeConverter = (container, parent) => {        
+        return new TimeConverter();
+    }
+    appOC.set("TimeConverter", _buildTimeConverter);
+
     const ConfigStorage = require("./storage/ConfigStorage");
     const _buildConfigStorage = (container, parent) => {
         return new ConfigStorage();
@@ -82,6 +88,7 @@ const buildAppOC = async () => {
             configStorage.get("TMDB_BACKDROP_SIZE"),
             configStorage.get("TMDB_POSTER_SIZE"),
             configStorage.get("TMDB_MOVIE_GENRE_ID_MAP"),
+            container.get("TimeConverter"),
             container.get("ErrorThrower"),
             container.get("ValTester"),
             container.get("Logger")

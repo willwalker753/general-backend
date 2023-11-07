@@ -7,9 +7,7 @@ class MovieFront {
     getTrendingMovies = async (req, res) => {
         try {
             const result = await this.movieService.getTrendingMovies();
-            res.status(200).send({
-                trending_movies: result
-            })
+            res.status(200).send(result);
         } catch (error) {
             this._handleErrorResponse(error, res);
         }
@@ -23,9 +21,9 @@ class MovieFront {
                 this.movieService.getViewerFavoriteMovies(),
             ]);
             const result = {
-                trending_movies: resultList[0],
-                now_playing: resultList[1],
-                viewer_favorites: resultList[2],
+                ...resultList[0],
+                ...resultList[1],
+                ...resultList[2],
             }
             res.status(200).send(result)
         } catch (error) {

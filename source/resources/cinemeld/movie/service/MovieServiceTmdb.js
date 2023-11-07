@@ -10,6 +10,7 @@ class MovieServiceTmdb extends MovieServiceInterface {
         backdropSizePromise,
         posterSizePromise,
         movieGenreIdMapPromise,
+        timeConverter,
         errorThrower,
         valTester,
         logger
@@ -20,6 +21,7 @@ class MovieServiceTmdb extends MovieServiceInterface {
         this.backdropSizePromise = backdropSizePromise;
         this.posterSizePromise = posterSizePromise;
         this.movieGenreIdMapPromise = movieGenreIdMapPromise;
+        this.timeConverter = timeConverter;
         this.errorThrower = errorThrower;
         this.valTester = valTester;
         this.logger = logger;
@@ -38,8 +40,10 @@ class MovieServiceTmdb extends MovieServiceInterface {
         }
 
         return {
-            ...res,
-            results: parsedMovies
+            trending_movies: {
+                ...res,
+                results: parsedMovies
+            }
         };
     }
 
@@ -56,8 +60,10 @@ class MovieServiceTmdb extends MovieServiceInterface {
         }
 
         return {
-            ...res,
-            results: parsedMovies
+            now_playing: {
+                ...res,
+                results: parsedMovies
+            }
         };
     }
 
@@ -74,8 +80,10 @@ class MovieServiceTmdb extends MovieServiceInterface {
         }
 
         return {
-            ...res,
-            results: parsedMovies
+            viewer_favorites: {
+                ...res,
+                results: parsedMovies
+            }
         };
     }
 
@@ -117,11 +125,106 @@ class MovieServiceTmdb extends MovieServiceInterface {
 
         return {
             ...res,
+            detail: await this._parseMovieDetailObject(res),
+            trailer: this._parseMovieVideosObject(res.videos),
             // results: parsedMovies
         };
     }
 
 
+    _parseMovieDetailObject = async (movie) => {
+        const totalMinutes = movie.runtime;
+        const { hours, minutes } = this.timeConverter.convertMinutesToHoursMinutes(totalMinutes);
+        const hoursMinutesDisplayText = this.timeConverter.getHoursMinutesDisplayText(hours, minutes);
+
+        return {
+            id: movie.id,
+            backdrop_url: await this._getBackdropUrl(movie.backdrop_path),
+            title: movie.title,
+            overview: movie.overview,
+            genre_list: movie.genres,
+            popularity: movie.popularity,
+            release_date: movie.release_date,
+            vote_percent: this._convertVoteAverageToPercent(movie.vote_average),
+            vote_factor: this._convertVoteAverageToFactor(movie.vote_average),
+            vote_count: movie.vote_count,
+            poster_url: await this._getPosterUrl(movie.poster_path),
+            collection: {
+                collection_id: this.valTester.safeGet(() => movie.belongs_to_collection.id, null),
+                name: this.valTester.safeGet(() => movie.belongs_to_collection.name, ""),
+                poster_url: await this._getBackdropUrl(
+                    this.valTester.safeGet(() => movie.belongs_to_collection.poster_path, "")
+                ),
+                backdrop_url: await this._getBackdropUrl(
+                    this.valTester.safeGet(() => movie.belongs_to_collection.backdrop_path, "")
+                )
+            },
+            runtime: {
+                total_minutes: totalMinutes,
+                hours,
+                minutes,
+                hour_minute_display_text: hoursMinutesDisplayText
+            }
+        }
+    }
+
+    // returns null if there are no videos
+    // otherwise returns a parsed version of the highest ranked video
+    _parseMovieVideosObject = (videos) => {
+        // there can be alot of videos, and I can't sort/filter them in the api
+        // so here is some manual sorting that prefers an official trailer
+        const keyRanking = {
+            type: {
+                "Trailer": 5,
+                "Teaser": 2,
+                "Clip": 1,
+                "Featurette": 1,
+                "Behind the Scenes": 1,
+            },
+            official: {
+                true: 2,
+                false: 1
+            }
+        }        
+        let autoAcceptScore = 7;
+        let highestRankedVideo = {
+            video: null,
+            score: 0
+        }
+        const keyRankingKeys = Object.keys(keyRanking);
+        // iterate through the videos by oldest first (because trailers tend to be the oldest)
+        for (let i=videos.results.length-1; i>0; i--) {
+            const curVideo = videos.results[i];
+            // safely add the score from each of the ranking keys together
+            let curVideoScore = 0;
+            keyRankingKeys.forEach(keyRankingKey => {
+                curVideoScore += this.valTester.safeGet(() => keyRanking[keyRankingKey][curVideo[keyRankingKey]], 0)
+            })
+            if (curVideoScore > highestRankedVideo.score) {
+                highestRankedVideo.video = curVideo;
+                highestRankedVideo.score = curVideoScore;
+            }
+            if (curVideoScore >= autoAcceptScore) break;
+        }
+
+        return highestRankedVideo.video;
+    }
+
+    _parseMovieExternalIdsObject = async (movie) => {
+
+    }
+
+    _parseMovieSimilarObject = async (movie) => {
+
+    }
+
+    _parseMovieReviewsObject = async (movie) => {
+
+    }
+
+    _parseMovieWatchProvidersObject = async (movie) => {
+
+    }
 
     _parseMovieSummaryObject = async (movie) => {
         return {
@@ -161,7 +264,10 @@ class MovieServiceTmdb extends MovieServiceInterface {
                 this.logger.error(`Unable to find movie genre for id: ${genreId}`);
                 return;
             }
-            genreList.push(genre);
+            genreList.push({
+                id: genreId,
+                name: genre
+            });
         })
         return genreList;
     }
@@ -173,7 +279,9 @@ class MovieServiceTmdb extends MovieServiceInterface {
 
     // converts to the tmdb vote average (scale of 0 to 10) to a factor (0 to 1)
     _convertVoteAverageToFactor = (voteAverage) => {
-        return this._convertVoteAverageToPercent(voteAverage) / 100;
+        const factor = this._convertVoteAverageToPercent(voteAverage) / 100;
+        const limitedDecimalFactor = parseFloat(factor.toFixed(2));
+        return limitedDecimalFactor;
     }
 }
 
