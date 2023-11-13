@@ -99,35 +99,15 @@ class MovieServiceTmdb extends MovieServiceInterface {
 
 
     getMovieDetail = async (movieId) => {
-
-
-/*
-
-        left off here
-
-        working on parsing the detail response for the webapp
-
-        adding movie detail page
-        
-*/
-
-
         const res = await this.tmdbApiAgent.get(`/movie/${movieId}?append_to_response=videos%2Cexternal_ids%2Csimilar%2Creviews%2Cwatch%2Fproviders&language=en-US`);
         if (res.success === false) {
             this.errorThrower.server("Error while getting the list of movies. Please try again", res)
         }
-        
-        // const parsedMovies = [];
-        // for (let i=0; i<res.results.length; i++) {
-        //     const movie = res.results[i];
-        //     parsedMovies.push(await this._parseMovieSummaryObject(movie));
-        // }
 
         return {
-            ...res,
+            // ...res,
             detail: await this._parseMovieDetailObject(res),
-            trailer: this._parseMovieVideosObject(res.videos),
-            // results: parsedMovies
+            trailer: this._parseMovieVideosObject(res.videos)
         };
     }
 
@@ -264,10 +244,7 @@ class MovieServiceTmdb extends MovieServiceInterface {
                 this.logger.error(`Unable to find movie genre for id: ${genreId}`);
                 return;
             }
-            genreList.push({
-                id: genreId,
-                name: genre
-            });
+            genreList.push(genre);
         })
         return genreList;
     }
