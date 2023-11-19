@@ -99,15 +99,19 @@ class MovieServiceTmdb extends MovieServiceInterface {
 
 
     getMovieDetail = async (movieId) => {
-        const res = await this.tmdbApiAgent.get(`/movie/${movieId}?append_to_response=videos%2Cexternal_ids%2Csimilar%2Creviews%2Cwatch%2Fproviders&language=en-US`);
+        const res = await this.tmdbApiAgent.get(`/movie/${movieId}?append_to_response=videos%2Cexternal_ids%2Csimilar%2Creviews%2Cwatch%2Fproviders%2Crelease_dates&language=en-US`);
         if (res.success === false) {
             this.errorThrower.server("Error while getting the list of movies. Please try again", res)
         }
 
         return {
             // ...res,
-            detail: await this._parseMovieDetailObject(res),
-            trailer: this._parseMovieVideosObject(res.videos)
+            detail: {
+                ...await this._parseMovieDetailObject(res),
+                release: this._parseMovieReleaseDates(res.release_dates),     
+                trailer: this._parseMovieVideosObject(res.videos),
+                external_link: this._parseMovieExternalIdsObject(res.external_ids),
+            }
         };
     }
 
@@ -190,20 +194,38 @@ class MovieServiceTmdb extends MovieServiceInterface {
         return highestRankedVideo.video;
     }
 
-    _parseMovieExternalIdsObject = async (movie) => {
+    _parseMovieExternalIdsObject = (externalIds) => {
+        return {
+            imdb: externalIds.imdb_id ? `https://www.imdb.com/title/${externalIds.imdb_id}/` : ""
+        }
+    }
+
+    _parseMovieSimilarObject = (movie) => {
 
     }
 
-    _parseMovieSimilarObject = async (movie) => {
+    _parseMovieReviewsObject = (movie) => {
 
     }
 
-    _parseMovieReviewsObject = async (movie) => {
+    _parseMovieWatchProvidersObject = (movie) => {
 
     }
 
-    _parseMovieWatchProvidersObject = async (movie) => {
+    _parseMovieReleaseDates = (releaseDates) => {
+        let retVal = {
+            certification: ""
+        }
+        // find the united states release
+        const usReleaseIndex = releaseDates.results.findIndex(result => (
+            this.valTester.safeGet(() => result.iso_3166_1.toLowerCase(), "") === "us"
+        ));
+        if (usReleaseIndex < 0) return retVal;
 
+        // parse the first US release
+        const usRelease = this.valTester.safeGet(() => releaseDates.results[usReleaseIndex].release_dates[0], {certification: ""});
+        retVal.certification = usRelease.certification;
+        return retVal;
     }
 
     _parseMovieSummaryObject = async (movie) => {
