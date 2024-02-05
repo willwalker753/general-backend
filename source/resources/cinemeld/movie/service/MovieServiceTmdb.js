@@ -246,11 +246,13 @@ class MovieServiceTmdb extends MovieServiceInterface {
     }
 
     _getBackdropUrl = async (path) => {
+        if (typeof path !== "string") return null;
         const safePath = path.startsWith("/") ? path : `/${path}`;
         return `${await this.tmdbImageUrlBasePromise}/${await this.backdropSizePromise}${safePath}`;
     }
 
     _getPosterUrl = async (path) => {
+        if (typeof path !== "string") return null;
         const safePath = path.startsWith("/") ? path : `/${path}`;
         return `${await this.tmdbImageUrlBasePromise}/${await this.posterSizePromise}${safePath}`;
     }
